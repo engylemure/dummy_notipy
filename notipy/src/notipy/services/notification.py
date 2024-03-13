@@ -1,7 +1,7 @@
 from typing import AsyncIterator, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from notipy.models import Notification
+from notipy.models.notification import Notification
 from pydantic import BaseModel
 from notipy.utils.db import redis
 from redis.asyncio.client import PubSub

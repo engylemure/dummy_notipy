@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, WebSocket, WebSocketDisconnect
-from notipy.models import User
+from notipy.models.user import User
 from pydantic import BaseModel
 from notipy.utils.db import DBSessionDep, RedisDep
 from notipy.services import user as user_service, notification as notification_service
