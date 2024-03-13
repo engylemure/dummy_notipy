@@ -78,9 +78,9 @@ async def websocket_endpoint(
 ):
     await _check_user_exists(id, db)
     await websocket.accept()
+    pub_sub = redis.pubsub()
 
     async def _handler():
-        pub_sub = redis.pubsub()
         try:
             async for msg in notification_service.subscribe_to_user_messages(
                 id, pub_sub
@@ -96,4 +96,5 @@ async def websocket_endpoint(
         try:
             await websocket.receive()
         except Exception:
+            await pub_sub.close()
             break
