@@ -1,0 +1,6 @@
+**/target
+**/*.dump
+*.dump
+**/node_modules
+**/.venv
+**/__pycache__
