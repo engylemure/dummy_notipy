@@ -44,17 +44,35 @@ async def create_user_notification(
 ):
     await _check_user_exists(id, db)
     new_notification = await notification_service.create_notification(id, data, db)
-    notification_data = NotificationSchema(
-        id=new_notification.id,
-        content=new_notification.content,
-        deleted=new_notification.deleted,
-        viewed=new_notification.viewed,
-    )
-    await notification_service.notify_user(id, notification_data, redis)
+    await db.commit()
+    await db.refresh(new_notification)
+    print(new_notification)
+    await notification_service.notify_notification(id, new_notification, redis)
     return new_notification
 
 
-@router.websocket("/{id}/notifications/ws")
+@router.patch("/{user_id}/notifications/{notification_id}")
+async def update_user_notification(
+    user_id: int,
+    notification_id: int,
+    data: notification_service.UpdateNotification,
+    db: DBSessionDep,
+    redis: RedisDep,
+):
+    await _check_user_exists(user_id, db)
+    updated_notification = await notification_service.update_notification(
+        notification_id, user_id, data, db
+    )
+    await db.commit()
+    if updated_notification:
+        await db.refresh(updated_notification)
+        await notification_service.notify_notification(
+            user_id, updated_notification, redis
+        )
+    return updated_notification
+
+
+@router.websocket("/{id}/notifications-ws")
 async def websocket_endpoint(
     id: int, websocket: WebSocket, db: DBSessionDep, redis: RedisDep
 ):

@@ -2,13 +2,11 @@ from notipy.utils.db import sessionmanager, redismanager
 from notipy.api import user
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-import sys
-
-running = True
+from fastapi.middleware.cors import CORSMiddleware
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI):
     """
     Function that handles startup and shutdown events.
     To understand more, read https://fastapi.tiangolo.com/advanced/events/
@@ -23,6 +21,16 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(user.router)
 
